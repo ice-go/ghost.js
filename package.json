@@ -1,0 +1,61 @@
+{
+  "name": "w3ghost",
+  "version": "0.2.0",
+  "description": "Warcraft 3 Game Host",
+  "main": "lib/GHost.js",
+  "bin": {
+    "w3host": "./bin/w3host",
+    "w3proxy": "./bin/w3proxy"
+  },
+  "engines": {
+    "node": ">=6.x"
+  },
+  "dependencies": {
+    "binary": "^0.3.0",
+    "blizzardry": "^0.5.0",
+    "bufferpack": "^0.0.6",
+    "bunyan": "^1.8.1",
+    "chalk": "^1.1.3",
+    "debug": "^2.2.0",
+    "ffi-napi": "^2.4.5",
+    "hex": "^0.1.0",
+    "ip": "^1.1.3",
+    "ref": "^1.3.5",
+    "ref-array": "^1.1.2",
+    "ref-struct": "^1.1.0",
+    "yargs": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.10",
+    "eslint": "^3.4.0",
+    "eslint-config-airbnb": "10.0.1",
+    "eslint-config-es": "^0.8.0",
+    "eslint-plugin-extended": "^0.2.0",
+    "eslint-plugin-mocha": "^4.5.1",
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node ./src/cli/host.ts --config=./config.json",
+    "dev": "env GHOST_DEBUG=hex,log ts-node ./src/cli/host.ts --config=./config.json",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/w3gh/ghost.js.git"
+  },
+  "keywords": [
+    "w3gh",
+    "ghost++",
+    "host",
+    "war3"
+  ],
+  "author": "Nikolay Kostyurin <jilizart@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/w3gh/ghost.js/issues"
+  },
+  "homepage": "https://github.com/w3gh/ghost.js",
+  "engine-strict": true
+}
