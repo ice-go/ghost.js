@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-ffi-generate -f ./bncsutil/src/bncsutil/bncsutil.h -L /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/ -l libbncsutil
+npx ffi-generate -f ./src/bncsutil.h --libclang /usr/lib/llvm-6.0/lib/ -l libbncsutil
