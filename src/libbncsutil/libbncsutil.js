@@ -1,140 +1,54 @@
-var FFI = require('ffi-napi'),
+const FFI = require('ffi'),
+    ArrayType = require('ref-array'),
     Struct = require('ref-struct'),
-    ref = require('ref'),
-    path = require('path');
+    ref = require('ref');
 
-var voidPtr = ref.refType(ref.types.void);
+const voidPtr = ref.refType(ref.types.void);
 
 exports.CONSTANTS = {
-  '': {
-      P_ALL: 0,
-      P_PID: 1,
-      P_PGID: 2,
-      '0': 'P_ALL',
-      '1': 'P_PID',
-      '2': 'P_PGID',
-  },
 };
 
-var siginfo_t = exports.siginfo_t = voidPtr;
-var siginfo_tPtr = exports.siginfo_tPtr = ref.refType(siginfo_t);
-var div_t = exports.div_t = Struct({
+const fd_set = exports.fd_set = Struct({
+  __fds_bits: ArrayType(ref.types.long, 16),
+});
+const fd_setPtr = exports.fd_setPtr = ref.refType(fd_set);
+const __sigset_t = exports.__sigset_t = Struct({
+  __val: ArrayType(ref.types.ulong, 16),
+});
+const __sigset_tPtr = exports.__sigset_tPtr = ref.refType(__sigset_t);
+const int32_t = exports.int32_t = Struct({
+  __int32_t: ref.types.int32,
+});
+const int32_tPtr = exports.int32_tPtr = ref.refType(int32_t);
+const __compar_fn_t = exports.__compar_fn_t = FFI.Function(ref.types.int32, [
+  voidPtr,
+  voidPtr,
+]);
+const __compar_fn_tPtr = exports.__compar_fn_tPtr = ref.refType(__compar_fn_t);
+const div_t = exports.div_t = Struct({
   quot: ref.types.int32,
   rem: ref.types.int32,
 });
-var div_tPtr = exports.div_tPtr = ref.refType(div_t);
-var ldiv_t = exports.ldiv_t = Struct({
+const div_tPtr = exports.div_tPtr = ref.refType(div_t);
+const ldiv_t = exports.ldiv_t = Struct({
   quot: ref.types.long,
   rem: ref.types.long,
 });
-var ldiv_tPtr = exports.ldiv_tPtr = ref.refType(ldiv_t);
-var lldiv_t = exports.lldiv_t = Struct({
+const ldiv_tPtr = exports.ldiv_tPtr = ref.refType(ldiv_t);
+const lldiv_t = exports.lldiv_t = Struct({
   quot: ref.types.longlong,
   rem: ref.types.longlong,
 });
-var lldiv_tPtr = exports.lldiv_tPtr = ref.refType(lldiv_t);
-var wchar_t = exports.wchar_t = Struct({
-  __darwin_wchar_t: ref.types.int32,
+const lldiv_tPtr = exports.lldiv_tPtr = ref.refType(lldiv_t);
+const uint32_t = exports.uint32_t = Struct({
+  __uint32_t: ref.types.uint32,
 });
-var wchar_tPtr = exports.wchar_tPtr = ref.refType(wchar_t);
-var uint32_t = exports.uint32_t = voidPtr;
-var uint32_tPtr = exports.uint32_tPtr = ref.refType(uint32_t);
-var nls_t = exports.nls_t = voidPtr;
-var nls_tPtr = exports.nls_tPtr = ref.refType(nls_t);
+const uint32_tPtr = exports.uint32_tPtr = ref.refType(uint32_t);
+const nls_t = exports.nls_t = voidPtr;
+const nls_tPtr = exports.nls_tPtr = ref.refType(nls_t);
 
-var platform = process.platform;
-var libPath = null;
-var cwd = process.cwd();
-
-if (platform === 'win32'){
-    libPath = '/libbncsutil.dll';
-}else if(platform === 'linux'){
-    libPath = '/libbncsutil.so';
-}else if(platform === 'darwin'){
-    libPath = '/libbncsutil.dylib';
-}else{
-    throw new Error('unsupported plateform for mathlibLoc');
-}
-
-exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
-  signal: [voidPtr, [
-    ref.types.int32,
-    voidPtr,
-  ]],
-  getpriority: [ref.types.int32, [
-    ref.types.int32,
-    ref.types.uint32,
-  ]],
-  getiopolicy_np: [ref.types.int32, [
-    ref.types.int32,
-    ref.types.int32,
-  ]],
-  getrlimit: [ref.types.int32, [
-    ref.types.int32,
-    voidPtr,
-  ]],
-  getrusage: [ref.types.int32, [
-    ref.types.int32,
-    voidPtr,
-  ]],
-  setpriority: [ref.types.int32, [
-    ref.types.int32,
-    ref.types.uint32,
-    ref.types.int32,
-  ]],
-  setiopolicy_np: [ref.types.int32, [
-    ref.types.int32,
-    ref.types.int32,
-    ref.types.int32,
-  ]],
-  setrlimit: [ref.types.int32, [
-    ref.types.int32,
-    voidPtr,
-  ]],
-  // _OSSwapInt16: [ref.types.ushort, [
-  //   ref.types.ushort,
-  // ]],
-  // _OSSwapInt32: [ref.types.uint32, [
-  //   ref.types.uint32,
-  // ]],
-  // _OSSwapInt64: [ref.types.ulonglong, [
-  //   ref.types.ulonglong,
-  // ]],
-  wait: [ref.types.int32, [
-    ref.refType(ref.types.int32),
-  ]],
-  waitpid: [ref.types.int32, [
-    ref.types.int32,
-    ref.refType(ref.types.int32),
-    ref.types.int32,
-  ]],
-  waitid: [ref.types.int32, [
-    ref.types.uint32,
-    ref.types.uint32,
-    siginfo_t,
-    ref.types.int32,
-  ]],
-  wait3: [ref.types.int32, [
-    ref.refType(ref.types.int32),
-    ref.types.int32,
-    voidPtr,
-  ]],
-  wait4: [ref.types.int32, [
-    ref.types.int32,
-    ref.refType(ref.types.int32),
-    ref.types.int32,
-    voidPtr,
-  ]],
-  // alloca: [voidPtr, [
-  //   ref.types.ulong,
-  // ]],
-  abort: [ref.types.void, [
-  ]],
-  abs: [ref.types.int32, [
-    ref.types.int32,
-  ]],
-  atexit: [ref.types.int32, [
-    voidPtr,
+exports.libbncsutil = new FFI.Library('libbncsutil', {
+  __ctype_get_mb_cur_max: [ref.types.int32, [
   ]],
   atof: [ref.types.double, [
     ref.types.CString,
@@ -147,81 +61,6 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
   ]],
   atoll: [ref.types.longlong, [
     ref.types.CString,
-  ]],
-  bsearch: [voidPtr, [
-    voidPtr,
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-  ]],
-  calloc: [voidPtr, [
-    ref.types.ulong,
-    ref.types.ulong,
-  ]],
-  div: [div_t, [
-    ref.types.int32,
-    ref.types.int32,
-  ]],
-  exit: [ref.types.void, [
-    ref.types.int32,
-  ]],
-  free: [ref.types.void, [
-    voidPtr,
-  ]],
-  getenv: [ref.types.CString, [
-    ref.types.CString,
-  ]],
-  labs: [ref.types.long, [
-    ref.types.long,
-  ]],
-  ldiv: [ldiv_t, [
-    ref.types.long,
-    ref.types.long,
-  ]],
-  llabs: [ref.types.longlong, [
-    ref.types.longlong,
-  ]],
-  lldiv: [lldiv_t, [
-    ref.types.longlong,
-    ref.types.longlong,
-  ]],
-  malloc: [voidPtr, [
-    ref.types.ulong,
-  ]],
-  mblen: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.ulong,
-  ]],
-  mbstowcs: [ref.types.ulong, [
-    wchar_tPtr,
-    ref.types.CString,
-    ref.types.ulong,
-  ]],
-  mbtowc: [ref.types.int32, [
-    wchar_tPtr,
-    ref.types.CString,
-    ref.types.ulong,
-  ]],
-  posix_memalign: [ref.types.int32, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-  ]],
-  qsort: [ref.types.void, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-  ]],
-  rand: [ref.types.int32, [
-  ]],
-  realloc: [voidPtr, [
-    voidPtr,
-    ref.types.ulong,
-  ]],
-  srand: [ref.types.void, [
-    ref.types.uint32,
   ]],
   strtod: [ref.types.double, [
     ref.types.CString,
@@ -236,12 +75,22 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
     voidPtr,
     ref.types.int32,
   ]],
-  strtoll: [ref.types.longlong, [
+  strtoul: [ref.types.ulong, [
     ref.types.CString,
     voidPtr,
     ref.types.int32,
   ]],
-  strtoul: [ref.types.ulong, [
+  strtoq: [ref.types.longlong, [
+    ref.types.CString,
+    voidPtr,
+    ref.types.int32,
+  ]],
+  strtouq: [ref.types.ulonglong, [
+    ref.types.CString,
+    voidPtr,
+    ref.types.int32,
+  ]],
+  strtoll: [ref.types.longlong, [
     ref.types.CString,
     voidPtr,
     ref.types.int32,
@@ -251,34 +100,272 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
     voidPtr,
     ref.types.int32,
   ]],
-  system: [ref.types.int32, [
+  l64a: [ref.types.CString, [
+    ref.types.long,
+  ]],
+  a64l: [ref.types.long, [
     ref.types.CString,
   ]],
-  wcstombs: [ref.types.ulong, [
-    ref.types.CString,
-    wchar_tPtr,
-    ref.types.ulong,
+  // __bswap_16: [ref.types.ushort, [
+  //   ref.types.ushort,
+  // ]],
+  // __bswap_32: [ref.types.uint32, [
+  //   ref.types.uint32,
+  // ]],
+  // __bswap_64: [ref.types.ulong, [
+  //   ref.types.ulong,
+  // ]],
+  // __uint16_identity: [ref.types.ushort, [
+  //   ref.types.ushort,
+  // ]],
+  // __uint32_identity: [ref.types.uint32, [
+  //   ref.types.uint32,
+  // ]],
+  // __uint64_identity: [ref.types.ulong, [
+  //   ref.types.ulong,
+  // ]],
+  select: [ref.types.int32, [
+    ref.types.int32,
+    fd_setPtr,
+    fd_setPtr,
+    fd_setPtr,
+    voidPtr,
   ]],
-  wctomb: [ref.types.int32, [
+  pselect: [ref.types.int32, [
+    ref.types.int32,
+    fd_setPtr,
+    fd_setPtr,
+    fd_setPtr,
+    voidPtr,
+    __sigset_tPtr,
+  ]],
+  random: [ref.types.long, [
+  ]],
+  srandom: [ref.types.void, [
+    ref.types.uint32,
+  ]],
+  initstate: [ref.types.CString, [
+    ref.types.uint32,
     ref.types.CString,
+    ref.types.int32,
+  ]],
+  setstate: [ref.types.CString, [
+    ref.types.CString,
+  ]],
+  random_r: [ref.types.int32, [
+    voidPtr,
+    int32_tPtr,
+  ]],
+  srandom_r: [ref.types.int32, [
+    ref.types.uint32,
+    voidPtr,
+  ]],
+  initstate_r: [ref.types.int32, [
+    ref.types.uint32,
+    ref.types.CString,
+    ref.types.int32,
+    voidPtr,
+  ]],
+  setstate_r: [ref.types.int32, [
+    ref.types.CString,
+    voidPtr,
+  ]],
+  rand: [ref.types.int32, [
+  ]],
+  srand: [ref.types.void, [
+    ref.types.uint32,
+  ]],
+  rand_r: [ref.types.int32, [
+    ref.refType(ref.types.uint32),
+  ]],
+  drand48: [ref.types.double, [
+  ]],
+  erand48: [ref.types.double, [
+    ref.types.ushort,
+  ]],
+  lrand48: [ref.types.long, [
+  ]],
+  nrand48: [ref.types.long, [
+    ref.types.ushort,
+  ]],
+  mrand48: [ref.types.long, [
+  ]],
+  jrand48: [ref.types.long, [
+    ref.types.ushort,
+  ]],
+  srand48: [ref.types.void, [
+    ref.types.long,
+  ]],
+  seed48: [ref.refType(ref.types.ushort), [
+    ref.types.ushort,
+  ]],
+  lcong48: [ref.types.void, [
+    ref.types.ushort,
+  ]],
+  drand48_r: [ref.types.int32, [
+    voidPtr,
+    ref.refType(ref.types.double),
+  ]],
+  erand48_r: [ref.types.int32, [
+    ref.types.ushort,
+    voidPtr,
+    ref.refType(ref.types.double),
+  ]],
+  lrand48_r: [ref.types.int32, [
+    voidPtr,
+    ref.refType(ref.types.long),
+  ]],
+  nrand48_r: [ref.types.int32, [
+    ref.types.ushort,
+    voidPtr,
+    ref.refType(ref.types.long),
+  ]],
+  mrand48_r: [ref.types.int32, [
+    voidPtr,
+    ref.refType(ref.types.long),
+  ]],
+  jrand48_r: [ref.types.int32, [
+    ref.types.ushort,
+    voidPtr,
+    ref.refType(ref.types.long),
+  ]],
+  srand48_r: [ref.types.int32, [
+    ref.types.long,
+    voidPtr,
+  ]],
+  seed48_r: [ref.types.int32, [
+    ref.types.ushort,
+    voidPtr,
+  ]],
+  lcong48_r: [ref.types.int32, [
+    ref.types.ushort,
+    voidPtr,
+  ]],
+  malloc: [voidPtr, [
+    ref.types.int32,
+  ]],
+  calloc: [voidPtr, [
+    ref.types.int32,
+    ref.types.int32,
+  ]],
+  realloc: [voidPtr, [
+    voidPtr,
+    ref.types.int32,
+  ]],
+  free: [ref.types.void, [
+    voidPtr,
+  ]],
+  // alloca: [voidPtr, [
+  //   ref.types.int32,
+  // ]],
+  valloc: [voidPtr, [
+    ref.types.int32,
+  ]],
+  posix_memalign: [ref.types.int32, [
+    voidPtr,
+    ref.types.int32,
+    ref.types.int32,
+  ]],
+  aligned_alloc: [voidPtr, [
+    ref.types.int32,
+    ref.types.int32,
+  ]],
+  abort: [ref.types.void, [
+  ]],
+  // atexit: [ref.types.int32, [
+  //   voidPtr,
+  // ]],
+  // at_quick_exit: [ref.types.int32, [
+  //   voidPtr,
+  // ]],
+  on_exit: [ref.types.int32, [
+    voidPtr,
+    voidPtr,
+  ]],
+  exit: [ref.types.void, [
+    ref.types.int32,
+  ]],
+  quick_exit: [ref.types.void, [
     ref.types.int32,
   ]],
   _Exit: [ref.types.void, [
     ref.types.int32,
   ]],
-  a64l: [ref.types.long, [
+  getenv: [ref.types.CString, [
     ref.types.CString,
   ]],
-  drand48: [ref.types.double, [
+  putenv: [ref.types.int32, [
+    ref.types.CString,
+  ]],
+  setenv: [ref.types.int32, [
+    ref.types.CString,
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  unsetenv: [ref.types.int32, [
+    ref.types.CString,
+  ]],
+  clearenv: [ref.types.int32, [
+  ]],
+  mktemp: [ref.types.CString, [
+    ref.types.CString,
+  ]],
+  mkstemp: [ref.types.int32, [
+    ref.types.CString,
+  ]],
+  mkstemps: [ref.types.int32, [
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  mkdtemp: [ref.types.CString, [
+    ref.types.CString,
+  ]],
+  system: [ref.types.int32, [
+    ref.types.CString,
+  ]],
+  realpath: [ref.types.CString, [
+    ref.types.CString,
+    ref.types.CString,
+  ]],
+  bsearch: [voidPtr, [
+    voidPtr,
+    voidPtr,
+    ref.types.int32,
+    ref.types.int32,
+    __compar_fn_t,
+  ]],
+  qsort: [ref.types.void, [
+    voidPtr,
+    ref.types.int32,
+    ref.types.int32,
+    __compar_fn_t,
+  ]],
+  abs: [ref.types.int32, [
+    ref.types.int32,
+  ]],
+  labs: [ref.types.long, [
+    ref.types.long,
+  ]],
+  llabs: [ref.types.longlong, [
+    ref.types.longlong,
+  ]],
+  div: [div_t, [
+    ref.types.int32,
+    ref.types.int32,
+  ]],
+  ldiv: [ldiv_t, [
+    ref.types.long,
+    ref.types.long,
+  ]],
+  lldiv: [lldiv_t, [
+    ref.types.longlong,
+    ref.types.longlong,
   ]],
   ecvt: [ref.types.CString, [
     ref.types.double,
     ref.types.int32,
     ref.refType(ref.types.int32),
     ref.refType(ref.types.int32),
-  ]],
-  erand48: [ref.types.double, [
-    ref.types.ushort,
   ]],
   fcvt: [ref.types.CString, [
     ref.types.double,
@@ -291,229 +378,52 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
     ref.types.int32,
     ref.types.CString,
   ]],
+  ecvt_r: [ref.types.int32, [
+    ref.types.double,
+    ref.types.int32,
+    ref.refType(ref.types.int32),
+    ref.refType(ref.types.int32),
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  fcvt_r: [ref.types.int32, [
+    ref.types.double,
+    ref.types.int32,
+    ref.refType(ref.types.int32),
+    ref.refType(ref.types.int32),
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  mblen: [ref.types.int32, [
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  mbtowc: [ref.types.int32, [
+    ref.refType(ref.types.int32),
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  wctomb: [ref.types.int32, [
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  mbstowcs: [ref.types.int32, [
+    ref.refType(ref.types.int32),
+    ref.types.CString,
+    ref.types.int32,
+  ]],
+  wcstombs: [ref.types.int32, [
+    ref.types.CString,
+    ref.refType(ref.types.int32),
+    ref.types.int32,
+  ]],
+  rpmatch: [ref.types.int32, [
+    ref.types.CString,
+  ]],
   getsubopt: [ref.types.int32, [
     voidPtr,
     voidPtr,
     voidPtr,
-  ]],
-  grantpt: [ref.types.int32, [
-    ref.types.int32,
-  ]],
-  initstate: [ref.types.CString, [
-    ref.types.uint32,
-    ref.types.CString,
-    ref.types.ulong,
-  ]],
-  jrand48: [ref.types.long, [
-    ref.types.ushort,
-  ]],
-  l64a: [ref.types.CString, [
-    ref.types.long,
-  ]],
-  lcong48: [ref.types.void, [
-    ref.types.ushort,
-  ]],
-  lrand48: [ref.types.long, [
-  ]],
-  mktemp: [ref.types.CString, [
-    ref.types.CString,
-  ]],
-  mkstemp: [ref.types.int32, [
-    ref.types.CString,
-  ]],
-  mrand48: [ref.types.long, [
-  ]],
-  nrand48: [ref.types.long, [
-    ref.types.ushort,
-  ]],
-  posix_openpt: [ref.types.int32, [
-    ref.types.int32,
-  ]],
-  ptsname: [ref.types.CString, [
-    ref.types.int32,
-  ]],
-  putenv: [ref.types.int32, [
-    ref.types.CString,
-  ]],
-  random: [ref.types.long, [
-  ]],
-  rand_r: [ref.types.int32, [
-    ref.refType(ref.types.uint32),
-  ]],
-  realpath: [ref.types.CString, [
-    ref.types.CString,
-    ref.types.CString,
-  ]],
-  seed48: [ref.refType(ref.types.ushort), [
-    ref.types.ushort,
-  ]],
-  setenv: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.CString,
-    ref.types.int32,
-  ]],
-  setkey: [ref.types.void, [
-    ref.types.CString,
-  ]],
-  setstate: [ref.types.CString, [
-    ref.types.CString,
-  ]],
-  srand48: [ref.types.void, [
-    ref.types.long,
-  ]],
-  srandom: [ref.types.void, [
-    ref.types.uint32,
-  ]],
-  unlockpt: [ref.types.int32, [
-    ref.types.int32,
-  ]],
-  unsetenv: [ref.types.int32, [
-    ref.types.CString,
-  ]],
-  arc4random: [ref.types.uint32, [
-  ]],
-  arc4random_addrandom: [ref.types.void, [
-    ref.refType(ref.types.uchar),
-    ref.types.int32,
-  ]],
-  arc4random_buf: [ref.types.void, [
-    voidPtr,
-    ref.types.ulong,
-  ]],
-  arc4random_stir: [ref.types.void, [
-  ]],
-  arc4random_uniform: [ref.types.uint32, [
-    ref.types.uint32,
-  ]],
-  cgetcap: [ref.types.CString, [
-    ref.types.CString,
-    ref.types.CString,
-    ref.types.int32,
-  ]],
-  cgetclose: [ref.types.int32, [
-  ]],
-  cgetent: [ref.types.int32, [
-    voidPtr,
-    voidPtr,
-    ref.types.CString,
-  ]],
-  cgetfirst: [ref.types.int32, [
-    voidPtr,
-    voidPtr,
-  ]],
-  cgetmatch: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.CString,
-  ]],
-  cgetnext: [ref.types.int32, [
-    voidPtr,
-    voidPtr,
-  ]],
-  cgetnum: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.CString,
-    ref.refType(ref.types.long),
-  ]],
-  cgetset: [ref.types.int32, [
-    ref.types.CString,
-  ]],
-  cgetstr: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.CString,
-    voidPtr,
-  ]],
-  cgetustr: [ref.types.int32, [
-    ref.types.CString,
-    ref.types.CString,
-    voidPtr,
-  ]],
-  daemon: [ref.types.int32, [
-    ref.types.int32,
-    ref.types.int32,
-  ]],
-  devname: [ref.types.CString, [
-    ref.types.int32,
-    ref.types.ushort,
-  ]],
-  devname_r: [ref.types.CString, [
-    ref.types.int32,
-    ref.types.ushort,
-    ref.types.CString,
-    ref.types.int32,
-  ]],
-  getbsize: [ref.types.CString, [
-    ref.refType(ref.types.int32),
-    ref.refType(ref.types.long),
-  ]],
-  getprogname: [ref.types.CString, [
-  ]],
-  heapsort: [ref.types.int32, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-  ]],
-  mergesort: [ref.types.int32, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-  ]],
-  psort: [ref.types.void, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-  ]],
-  psort_r: [ref.types.void, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-    voidPtr,
-  ]],
-  qsort_r: [ref.types.void, [
-    voidPtr,
-    ref.types.ulong,
-    ref.types.ulong,
-    voidPtr,
-    voidPtr,
-  ]],
-  radixsort: [ref.types.int32, [
-    voidPtr,
-    ref.types.int32,
-    ref.refType(ref.types.uchar),
-    ref.types.uint32,
-  ]],
-  setprogname: [ref.types.void, [
-    ref.types.CString,
-  ]],
-  sradixsort: [ref.types.int32, [
-    voidPtr,
-    ref.types.int32,
-    ref.refType(ref.types.uchar),
-    ref.types.uint32,
-  ]],
-  sranddev: [ref.types.void, [
-  ]],
-  srandomdev: [ref.types.void, [
-  ]],
-  reallocf: [voidPtr, [
-    voidPtr,
-    ref.types.ulong,
-  ]],
-  strtoq: [ref.types.longlong, [
-    ref.types.CString,
-    voidPtr,
-    ref.types.int32,
-  ]],
-  strtouq: [ref.types.ulonglong, [
-    ref.types.CString,
-    voidPtr,
-    ref.types.int32,
-  ]],
-  valloc: [voidPtr, [
-    ref.types.ulong,
   ]],
   extractMPQNumber: [ref.types.int32, [
     ref.types.CString,
@@ -529,8 +439,8 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
   getExeInfo: [ref.types.int32, [
     ref.types.CString,
     ref.types.CString,
-    ref.types.ulong,
-    uint32_t,
+    ref.types.int32,
+    uint32_tPtr,
     ref.types.int32,
   ]],
   get_mpq_seed: [ref.types.long, [
@@ -542,7 +452,7 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
   ]],
   calcHashBuf: [ref.types.void, [
     ref.types.CString,
-    ref.types.ulong,
+    ref.types.int32,
     ref.types.CString,
   ]],
   // bsha1_hash: [ref.types.void, [
@@ -567,7 +477,7 @@ exports.libbncsutil = new FFI.Library(path.resolve(cwd + libPath), {
     uint32_tPtr,
     uint32_tPtr,
     ref.types.CString,
-    ref.types.ulong,
+    ref.types.int32,
   ]],
   kd_init: [ref.types.int32, [
   ]],
