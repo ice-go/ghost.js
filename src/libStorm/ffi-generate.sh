@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-ffi-generate -f ../cpp/StormLib-master/src/StormLib.h -L /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/ -l Storm
+npx ffi-generate -f ./src/StormLib.h -L /usr/lib/llvm-6.0/lib/ -l Storm
